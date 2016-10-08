@@ -16,17 +16,18 @@ switch ($data['type']){
 					};
 				break;	
 			case 'list':
-			if (count($data) == 1) {$query = "-- Список сотрудников кафедры
-						SELECT `ID`, `Surname`, `Name`, `Lastname`
-						FROM `Profs`;";
+			if (count($data) == 1) {
+						$query = "-- Список сотрудников кафедры
+							SELECT `ID`, `Surname`, `Name`, `Lastname`
+							FROM `Profs`;";
 			}
-				else {
-				$depID = $data['depID'];
-				$query = "-- Список сотрудников кафедры
-						SELECT `ID`, `Surname`, `Name`, `Lastname`
-						FROM `Profs`
+			else {
+			$depID = $data['depID'];
+			$query = "-- Список сотрудников кафедры
+				SELECT `ID`, `Surname`, `Name`, `Lastname`
+				FROM `Profs`
 				WHERE `Departments_ID` = '$depID';";
-				};
+			};
 				if ($result = $mysql->query($query)) {	
 					$output = array();
 					 while ($row = $result->fetch_row())  
