@@ -189,8 +189,7 @@ app.controller('managerController', ['$scope','api', 'flib', function($scope,api
     });
     
     // Getting semesters.
-    api.get('semester_mod', 'list', {})
-    .then(function(response){
+    api.get('semester_mod', 'list', {}).then(function(response){
         console.debug('semesters');
         console.debug(response);
         $scope.semesters = response.data;
@@ -204,6 +203,7 @@ app.controller('managerController', ['$scope','api', 'flib', function($scope,api
     
     // Getting rooms.
     api.get('room_mod', 'list', {}).then(function(response){
+        console.debug('rooms');
         console.debug(response);
         $scope.rooms = response.data;
     }, function(response){
@@ -211,9 +211,6 @@ app.controller('managerController', ['$scope','api', 'flib', function($scope,api
     });
     
     // Watchers.
-    $scope.$watch('groupManage', function(oldValue, newValue){
-        $scope.chosenSemester = null;
-    });
     $scope.$watch('activeDep', function(oldValue, newValue){
         $scope.activeProfile = null;
         $scope.activeGroup = null;
@@ -320,7 +317,6 @@ app.controller('managerController', ['$scope','api', 'flib', function($scope,api
     
     $scope.manageGroup = function(group){
         $scope.activeGroup = group;
-        $scope.groupManage = true;
         
         // Grouplist
         api.get('grouplist_mod','list',{
@@ -511,7 +507,7 @@ app.controller('managerController', ['$scope','api', 'flib', function($scope,api
     
     $scope.manageDep = function(dep){
         $scope.activeDep = dep;
-        $scope.depManage = true;
+        
         if (typeof(dep.profs) == 'undefined'){
             api.get('prof_mod', 'list',{
                 depID: dep.id
@@ -679,26 +675,27 @@ app.controller('managerController', ['$scope','api', 'flib', function($scope,api
     };
     
     $scope.addRule = function(){
+        var groups = [];
+        var classes = [];
+        var profs = [];
+        var rooms = [];
+        
         try{
-            var groups = [];
             for(var i = 0; i< $scope.newRule.groups.length;++i){
                 groups.push($scope.newRule.groups[i].id);
             }
         } catch(err){}
         try{
-            var rooms = [];
             for(var i=0;i<$scope.newRule.rooms.length;++i){
                 rooms.push($scope.newRule.rooms[i].id);
             }
         } catch(err){}
         try{
-            var profs = [];
             for(var i=0;i<$scope.newRule.profs.length;++i){
                 profs.push($scope.newRule.profs[i].id);
             }
         } catch(err){}
         try{
-            var classes = [];
             for(var i=0;i<$scope.newRule.classes.length;++i){
                 classes.push(flib.getSQLDate($scope.newRule.classes[i]));
             }
@@ -717,7 +714,6 @@ app.controller('managerController', ['$scope','api', 'flib', function($scope,api
             order: $scope.newRule.order
         }).then(function(response){
             console.debug(response);
-            alert('success');
         }, function(response){
             console.debug(response);
         });
@@ -730,44 +726,10 @@ app.controller('managerController', ['$scope','api', 'flib', function($scope,api
         }).then(function(response){
             console.debug(response);
             $scope.groups = response.data;
+            $scope.newRule.groups = [];
         }, function(response){
             console.debug(response);
         });
-    };
-    
-    $scope.appendGroup = function(){
-        $scope.newRule.groups.push($scope.chosenGroup);
-        $scope.chosenGroup = null;
-    };
-    $scope.appendProf = function(){
-        $scope.newRule.profs.push($scope.chosenProf);
-        $scope.chosenProf = null;
-    };
-    $scope.appendRoom = function(){
-        $scope.newRule.rooms.push($scope.chosenRoom);
-        $scope.chosenRoom = null;
-    };
-    
-    $scope.takenGroup = function(group){
-        if (typeof($scope.newRule) == 'undefined') return false;
-        for(var i=0;i<$scope.newRule.groups.length;++i){
-            if ($scope.newRule.groups[i] == group) return true;
-        }
-        return false;
-    };
-    $scope.takenProf = function(prof){
-        if (typeof($scope.newRule) == 'undefined') return false;
-        for(var i=0;i<$scope.newRule.profs.length;++i){
-            if ($scope.newRule.profs[i] == prof) return true;
-        }
-        return false;
-    };
-    $scope.takenRoom = function(room){
-        if (typeof($scope.newRule) == 'undefined') return false;
-        for(var i=0;i<$scope.newRule.rooms.length;++i){
-            if ($scope.newRule.rooms[i] == room) return true;
-        }
-        return false;
     };
     
     $scope.removeGroupFromList = function(group){
@@ -782,7 +744,7 @@ app.controller('managerController', ['$scope','api', 'flib', function($scope,api
     
     $scope.resetClasses = function(){
         $scope.newRule.classes = $scope.generateDates();
-    }
+    };
     
     $scope.generateDates = function(){
         if (!$scope.scheduleFilter.semester || !$scope.newRule || !$scope.newRule.order || !$scope.newRule.weekDay || !$scope.newRule.weekType) return null;
@@ -907,6 +869,15 @@ app.controller('registerController', ['$scope', 'api', '$state', function($scope
         });
     }
 }]);
+app.filter('contains', function(){
+    return function(arr, value){
+        if (!angular.isArray(arr)) return false;
+        for(var i = 0; i < arr.length;++i){
+            if (arr[i] == value) return true;
+        }
+        return false;
+    }
+});
 app.filter('yesNo', function(){
    return  function(i){
        switch(typeof(i)){
