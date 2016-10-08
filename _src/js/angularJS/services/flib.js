@@ -11,11 +11,23 @@ app.service('flib', function(){
         getSQLDate: function(t){
             return t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
         },
-        findId: function(arr, v, f){
+        findByField: function(arr, v, f){
             for(var i=0;i<arr.length;++i){
-                if (arr[i].f == v) return arr[i];
+                if (arr[i][v] == f) return arr[i];
             }
             return null;
+        },
+        selectArrByField: function(arr1, field, arr2){
+            var res = [];
+            for(var k=0;k<arr2.length;++k){
+                for(var i = 0;i<arr1.length;++i){
+                    if (arr1[i][field] == arr2[k][field]) {
+                        res.push(arr1[i]);
+                        break;
+                    }
+                }
+            }
+            return res;
         }
     }
 });

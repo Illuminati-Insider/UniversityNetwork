@@ -32,7 +32,7 @@ switch($data['type']){
             foreach($rules_id as $ruleID){
                 $container = array();
                 $query = "
-                    SELECT DISTINCT `id`, `weekDay`, `weekType`, `classType`, `SubgroupIndex` as `subIndex`, `Subjects_ID` as `subjectID`, `order` 
+                    SELECT DISTINCT `ID` as `id`, `weekDay` as `weekDay`, `weekType` as `weekType`, `classType` as `classType`, `SubgroupIndex` as `subIndex`, `Subjects_ID` as `subjectID`, `order` as `order`
                     FROM `rulesList`
                     WHERE `id` = $ruleID";
                 if ($result = $mysql->query($query)){
@@ -120,7 +120,7 @@ switch($data['type']){
         break;
     case 'modify':
         $ruleID = checkInt($data['ruleID']);
-        $query = "DELETE FROM `ClassRules` WHERE `ID` = $ruleID; ";
+        $modify = true;
     case 'add':
         $roomsID = $data['rooms_id'];
         $profsID = $data['profs_id'];
@@ -133,24 +133,36 @@ switch($data['type']){
         $order = checkInt($data['order']);
         $subjectID = checkInt($data['subjectID']);
         
-        $query .= "
-            INSERT INTO `ClassRules`(`weekDay`, `weektype`, `classtype`, `subgroupIndex`, `order`, `subjects_id`)
-            VALUES ($weekDay, $weekType, '$classType', ".($subgroup ? $subgroup : 'NULL').", $order, $subjectID);
+        if ($modify){
+            $query = "
+                SET @RuleID = $ruleID;
 
-            SET @RuleID = @@IDENTITY;";
+                UPDATE `classRules`
+                SET `weekDay` = $weekDay, 
+                `weektype`= $weekType, 
+                `classtype` = '$classType', 
+                `subgroupIndex` = ".($subgroup ?? 'NULL').", 
+                `order` = $order,
+                `subjects_id` = $subjectID
+                WHERE `id` = @RuleID;";
+        } else {
+            $query = "
+                INSERT INTO `ClassRules`(`weekDay`, `weektype`, `classtype`, `subgroupIndex`, `order`, `subjects_id`)
+                VALUES ($weekDay, $weekType, '$classType', ".($subgroup ?? 'NULL').", $order, $subjectID);
+
+                SET @RuleID = @@IDENTITY;";
+        }
         
-        foreach($roomsID as $roomID){
-            $query .= "INSERT INTO `ClassRoom` VALUES (@RuleID, $roomID);";
+        $heritage = array('room' => $roomsID, 'prof' => $profsID, 'group' => $groupsID);
+        foreach($heritage as $c => $arr){
+            if ($modify) $query .= "DELETE FROM `Rule{$c}` WHERE `rules_ID`=@RuleID;";
+            foreach($arr as $entityID) $query.="INSERT INTO `Rule{$c}` VALUES (@RuleID, $entityID);";
         }
-        foreach($profsID as $profID){
-            $query .= "INSERT INTO `ClassProf` VALUES (@RuleID, $profID);";
-        }
-        foreach($groupsID as $groupID){
-            $query .= "INSERT INTO `ClassGroup` VALUES (@RuleID, $groupID);";
-        }
+        
         foreach($dates as $date){
             $query .= "INSERT INTO `Classes`(`classRules_id`, `startTime`) VALUES (@RuleID, '$date');";
         }
+        
         runMultiQuery($query);
         $output = array(
             'ruleID' => $ruleID ? $ruleID : $mysql->query("SELECT @RuleID")->fetch_row()[0],

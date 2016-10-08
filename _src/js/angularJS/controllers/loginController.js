@@ -1,15 +1,8 @@
-app.controller('loginController', ['$scope', '$http', '$state', function($scope, $http, $state){
+app.controller('loginController', ['$scope', 'api', '$state', function($scope, api, $state){
     $scope.confirm = function(){
-        $http({
-            method: 'POST',
-            url : '/op/_rc?rtype=auth_req&type=login',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data : "json=" + JSON.stringify({
+        api.post('auth_req', 'login', {
                 login: $scope.login,
                 psw: $scope.psw
-            })
         })
         .then(function(response){
             console.debug(response);

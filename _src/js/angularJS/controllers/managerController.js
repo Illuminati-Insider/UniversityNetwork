@@ -501,7 +501,7 @@ app.controller('managerController', ['$scope','api', 'flib', function($scope,api
             groups: [],
             rooms: [],
             profs: []
-        }
+        };
     };
     
     $scope.getRules = function(){
@@ -521,9 +521,38 @@ app.controller('managerController', ['$scope','api', 'flib', function($scope,api
             ruleID: rule.ID
         }).then(function(response){
             console.debug(response);
+            $scope.rules = flib.eject($scope.rules, rule);
         }, function(response){
             console.debug(response);
         });
+    };
+    
+    $scope.modifyRule = function(rule){
+        $scope.ruleForm = true;
+        
+        $scope.newRule = rule;
+        $scope.newRule.subject = flib.findByField($scope.subjects, 'id', rule.subjectID);
+        $scope.newRule.prototype = rule;
+        $scope.generateDates();
+        
+        api.get('prof_mod', 'list',{}).then(function(response){
+            console.debug(response);
+            $scope.profs = response.data;
+            $scope.newRule.profs=flib.selectArrByField($scope.profs, 'id', $scope.newRule.prototype.profs);
+        }, function(response){
+            console.debug(response);
+        });
+        api.get('group_mod', 'program_list', {
+            semesterID: $scope.scheduleFilter.semester.id,
+            subjectID: $scope.newRule.subject.id
+        }).then(function(response){
+            console.debug(response);
+            $scope.groups = response.data;
+            $scope.newRule.groups = flib.selectArrByField($scope.groups, 'id', $scope.newRule.prototype.groups);
+        }, function(response){
+            console.debug(response);
+        });
+        $scope.newRule.rooms = flib.selectArrByField($scope.rooms, 'id', $scope.newRule.prototype.rooms);
     };
     
     $scope.addRule = function(){
@@ -553,7 +582,13 @@ app.controller('managerController', ['$scope','api', 'flib', function($scope,api
             }
         } catch(err){}
         
-        api.post('schedule_mod', 'add',{
+        var modify = typeof($scope.newRule.prototype) != 'undefined';
+        if (modify) {
+            var ruleID = $scope.newRule.prototype.id;
+        }
+        
+        api.post('schedule_mod', modify ? 'modify' : 'add',{
+            ruleID: ruleID,
             rooms_id: rooms,
             profs_id: profs,
             groups_id: groups,

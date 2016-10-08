@@ -17,18 +17,9 @@ switch ($data['type']){
 					};
 				break;	
 			case 'list':
-			if (count($data) == 1) {
-						$query = "-- Список сотрудников кафедры
-							SELECT `ID`, `Surname`, `Name`, `Lastname`
-							FROM `Profs`;";
-			}
-			else {
-			$depID = $data['depID'];
-			$query = "-- Список сотрудников кафедры
-				SELECT `ID`, `Surname`, `Name`, `Lastname`
-				FROM `Profs`
-				WHERE `Departments_ID` = '$depID';";
-			};
+        $query = "SELECT `ID`, `Surname`, `Name`, `Lastname` FROM `profs`";
+        if (isset($data['depID'])) $query .= " WHERE `Departments_ID` = {$data['depID']}";
+        
 				if ($result = $mysql->query($query)) {	
 					$output = array();
 					 while ($row = $result->fetch_row())  
@@ -39,10 +30,7 @@ switch ($data['type']){
 						'name' =>$row[2], 
 						'lastname' =>$row[3], 
 						);
-						
-					 };					
-					 /* очищаем результирующий набор */
-					$result->close();
+					 }			
 				}
 					else {
 						throw403();
