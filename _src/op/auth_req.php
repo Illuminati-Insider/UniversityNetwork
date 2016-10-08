@@ -2,8 +2,8 @@
 
 switch($data['type']){
     case 'login':
-        $login = $_POST['login'];
-        $psw = $_POST['psw'];
+        $login = $data['login'];
+        $psw = $data['psw'];
 
         $query = "
             -- Получение хэша и ID пользователя из БД (с последующей валидацией в PHP)

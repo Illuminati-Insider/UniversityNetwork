@@ -28,7 +28,6 @@ switch($data['type']){
                 $rules_id[] = $row[0];
             }
             
-            
             $output = array();
             foreach($rules_id as $ruleID){
                 $container = array();
@@ -75,78 +74,48 @@ switch($data['type']){
                 }
             } else throw403();
             
-            // Rooms
-            if ($result = $mysql->query("
-                SELECT `ID`, `Location`
-                FROM `Rooms`
-                WHERE `ID` IN (
-                    SELECT DISTINCT `Rooms_ID`
-                    FROM `rulesList` 
-                    WHERE `Groups_ID` = $groupID
-                )
-                ")){
-                while($row = $result->fetch_row()){
-                    $output['rooms'][] = array(
-                        'id' => $row[0],
-                        'location' => $row[1]
-                    );
+            $dependencies = array(
+                'rooms' => array('Name' => 'name'), 
+                'groups' => array('Name' => 'name'), 
+                'profs' => array('Surname' => 'surname', 'Name' => 'name', 'Lastname' => 'lastname')
+            );
+            $multiQuery = '';
+            foreach($dependencies as $table => $fields){
+                $query = "SELECT `ID` as `id`";
+                foreach($fields as $field => $alias) $query.=",`$field` AS `$alias`";
+                $query .= " 
+                FROM `$table` 
+                WHERE `id` IN (
+                    SELECT DISTINCT `{$table}_id`
+                    FROM `rulesList`
+                    WHERE `{$table}_id` = $groupID
+                )";
+                $result = $mysql->query($query);
+                if (!$result) throw403();
+                while($row = $result->fetch_assoc()){
+                    $output[$table][] = $row;
                 }
-            } else throw403();
-            
-            // Groups
-            if ($result = $mysql->query("
-                SELECT `ID`, `Name`
-                FROM `Groups`
-                WHERE `ID` IN (
-                    SELECT DISTINCT `Groups_ID`
-                    FROM `rulesList` 
-                    WHERE `Groups_ID` = $groupID
-                )
-                ")){
-                while($row = $result->fetch_row()){
-                    $output['groups'][] = array(
-                        'id' => $row[0],
-                        'name' => $row[1]
-                    );
-                }
-            } else throw403();
-            
-            // Profs
-            if ($result = $mysql->query("
-                SELECT `ID`, `Surname`, `Name`, `Lastname`
-                FROM `Profs`
-                WHERE `ID` IN (
-                    SELECT DISTINCT `Profs_ID`
-                    FROM `rulesList` 
-                    WHERE `Groups_ID` = $groupID
-                )
-                ")){
-                while($row = $result->fetch_row()){
-                    $output['profs'][] = array(
-                        'id' => $row[0],
-                        'surname' => $row[1],
-                        'name' => $row[2],
-                        'lastname' => $row[3]
-                    );
-                }
-            } else throw403();
-            
+                $multiQuery .= $query.'
+                ;';
+            }
             // Classes
-            if ($result = $mysql->query("
-                SELECT `ID`, `StartTime` 
+            $query = "
+                SELECT `ID` as `id`, `StartTime` as `startTime`
                 FROM `Classes` 
                 WHERE `ClassRules_ID` IN (
                     SELECT `ID` FROM `rulesList` WHERE `Groups_ID` = $groupID
-                )
-            ")){
+                )";
+            
+            if ($result = $mysql->query($query)){
                 $output['classes'] = array();
-                while($row = $result->fetch_row()){
-                    $output['classes'][] = array(
-                        'id' => $row[0],
-                        'startTime' => $row[1]
-                    );
+                while($row = $result->fetch_assoc()){
+                    $output['classes'][] = $row;
                 }
             } else throw403();
+            $multiQuery .= $query.'
+                ;';
+            
+            die($multiQuery);
         }
         break;
     case 'modify':

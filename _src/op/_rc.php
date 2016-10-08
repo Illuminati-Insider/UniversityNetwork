@@ -86,20 +86,8 @@ function composeNote($table, $type){
 $start_exec_time = microtime(true);
 session_start();
 
-#########################################################################
-# Configuraion of MySQL.
-#
-$host = "localhost";
-$user = "";
-$pass = "";
-$dbname = "university_network";
-
-$mysql = mysqli_connect($host,$user,$pass,$dbname);
-
-if (mysqli_connect_errno()){
-    http_response_code(500);
-    die("MySQL connection failed.");
-}
+# Configuraion of MySQL. Connects to database and creates $mysql variable.
+require_once "db_connect.php.dcf";
 
 #########################################################################
 # Setup.

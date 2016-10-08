@@ -321,148 +321,150 @@
                 </md-input-container>
             </form>
             <md-divider></md-divider>
-            <md-button ng-show="!ruleForm" ng-click="addNewRule()">New rule</md-button>
-            <form name="addRuleForm" ng-show="ruleForm">
-                <md-button ng-click="ruleForm = false">Close</md-button>
-                <md-input-container>
-                    <label>Day</label>
-                    <md-select name="weekDay" ng-model="newRule.weekDay" ng-change="resetClasses()" required>
-                        <md-option value="1">Monday</md-option>
-                        <md-option value="2">Tuesday</md-option>
-                        <md-option value="3">Wednesday</md-option>
-                        <md-option value="4">Thursday</md-option>
-                        <md-option value="5">Friday</md-option>
-                    </md-select>
-                </md-input-container>
-                <md-input-container>
-                    <label>Time</label>
-                    <md-select name="order" ng-model="newRule.order" ng-change="resetClasses()" required>
-                        <md-option ng-repeat="note in orderTimes" ng-value="note.order">{{ note.time }}</md-option>
-                    </md-select>
-                </md-input-container>
-                <md-input-container>
-                    <label>Week</label>
-                    <md-select name="weekType" ng-model="newRule.weekType" ng-change="resetClasses()" required>
-                        <md-option value="11">each 4 starting with 1st</md-option>
-                        <md-option value="12">each 4 starting with 2nd</md-option>
-                        <md-option value="13">each 4 starting with 3rd</md-option>
-                        <md-option value="14">each 4 starting with 4th</md-option>
-                        <md-option value="2">even</md-option>
-                        <md-option value="3">odd</md-option>
-                        <md-option value="4">any</md-option>
-                    </md-select>
-                </md-input-container>
-                <md-divider></md-divider>
-                <h3>Dates</h3>
-                <div layout="row" layout-wrap>
-                    <div ng-repeat="classDate in newRule.classes" layout-padding>{{ classDate | date : 'd MMM, HH:mm' }}</div>
-                </div>
-                <md-divider></md-divider>
-                <md-input-container>
-                    <label>Subject</label>
-                    <md-select name="subject" ng-model="newRule.subject" ng-change="onRuleSubjectChanged()" required>
-                        <md-option ng-repeat="subject in subjects" ng-value="subject" ng-if="!scheduleFilter.subject || scheduleFilter.subject == subject">{{ subject.name }}</md-option>
-                    </md-select>
-                </md-input-container>
-                <md-input-container>
-                    <label>Type</label>
-                    <md-select name="classType" ng-model="newRule.classType" required>
-                        <md-option value="lection">Lection</md-option>
-                        <md-option value="lab">Lab</md-option>
-                        <md-option value="activity">Activity</md-option>
-                    </md-select>
-                </md-input-container>
-                <md-input-container>
-                    <label>Subgroup</label>
-                    <md-select name="subgroup" ng-model="newRule.subgroup">
-                        <md-option value="">None</md-option>
-                        <md-option value="1">1</md-option>
-                        <md-option value="2">2</md-option>
-                        <md-option value="3">3</md-option>
-                        <md-option value="4">4</md-option>
-                    </md-select>
-                </md-input-container>
-                <md-divider></md-divider>
-                <div layout="row">
-                    <div flex="33" layout="column">
-                        <div layout="row">
-                            <md-input-container>
-                                <label>Groups</label>
-                                <md-select ng-model="chosenGroup">
-                                    <md-option ng-repeat="group in groups" ng-if="!takenGroup(group)" ng-value="group">{{ group.name }}</md-option>
-                                </md-select>
-                            </md-input-container>
-                            <md-button ng-click="appendGroup()">Add</md-button>
-                        </div>
-                        <md-divider></md-divider>
-                        <div ng-repeat="group in newRule.groups" layout="row">
-                            <div flex="60">{{ group.name }}</div>
-                            <div flex><md-button ng-click="removeGroupFromList(group)">Remove</md-button></div>
-                        </div>
+            <div ng-if="scheduleFilter.semester">
+                <md-button ng-show="!ruleForm" ng-click="addNewRule()">New rule</md-button>
+                <form name="addRuleForm" ng-show="ruleForm">
+                    <md-button ng-click="ruleForm = false">Close</md-button>
+                    <md-input-container>
+                        <label>Day</label>
+                        <md-select name="weekDay" ng-model="newRule.weekDay" ng-change="resetClasses()" required>
+                            <md-option value="1">Monday</md-option>
+                            <md-option value="2">Tuesday</md-option>
+                            <md-option value="3">Wednesday</md-option>
+                            <md-option value="4">Thursday</md-option>
+                            <md-option value="5">Friday</md-option>
+                        </md-select>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Time</label>
+                        <md-select name="order" ng-model="newRule.order" ng-change="resetClasses()" required>
+                            <md-option ng-repeat="note in orderTimes" ng-value="note.order">{{ note.time }}</md-option>
+                        </md-select>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Week</label>
+                        <md-select name="weekType" ng-model="newRule.weekType" ng-change="resetClasses()" required>
+                            <md-option value="11">each 4 starting with 1st</md-option>
+                            <md-option value="12">each 4 starting with 2nd</md-option>
+                            <md-option value="13">each 4 starting with 3rd</md-option>
+                            <md-option value="14">each 4 starting with 4th</md-option>
+                            <md-option value="2">even</md-option>
+                            <md-option value="3">odd</md-option>
+                            <md-option value="4">any</md-option>
+                        </md-select>
+                    </md-input-container>
+                    <md-divider></md-divider>
+                    <h3>Dates</h3>
+                    <div layout="row" layout-wrap>
+                        <div ng-repeat="classDate in newRule.classes" layout-padding>{{ classDate | date : 'd MMM, HH:mm' }}</div>
                     </div>
                     <md-divider></md-divider>
-                    <div flex="33" layout="column">
-                        <div layout="row">
-                            <md-input-container>
-                                <label>Profs</label>
-                                <md-select ng-model="chosenProf">
-                                    <md-option ng-repeat="prof in profs" ng-if="!takenProf(prof)" ng-value="prof">{{ prof.surname + ' ' + prof.name + ' ' + prof.lastname }}</md-option>
-                                </md-select>
-                            </md-input-container>
-                            <md-button ng-click="appendProf()">Add</md-button>
-                        </div>
-                        <md-divider></md-divider>
-                        <div ng-repeat="prof in newRule.profs" layout="row">
-                            <div flex="60">{{ prof.surname + ' ' + prof.name + ' ' + prof.lastname }}</div>
-                            <div flex><md-button ng-click="removeProfFromList(prof)">Remove</md-button></div>
-                        </div>
-                    </div>
+                    <md-input-container>
+                        <label>Subject</label>
+                        <md-select name="subject" ng-model="newRule.subject" ng-change="onRuleSubjectChanged()" required>
+                            <md-option ng-repeat="subject in subjects" ng-value="subject">{{ subject.name }}</md-option>
+                        </md-select>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Type</label>
+                        <md-select name="classType" ng-model="newRule.classType" required>
+                            <md-option value="lection">Lection</md-option>
+                            <md-option value="lab">Lab</md-option>
+                            <md-option value="activity">Activity</md-option>
+                        </md-select>
+                    </md-input-container>
+                    <md-input-container>
+                        <label>Subgroup</label>
+                        <md-select name="subgroup" ng-model="newRule.subgroup">
+                            <md-option value="">None</md-option>
+                            <md-option value="1">1</md-option>
+                            <md-option value="2">2</md-option>
+                            <md-option value="3">3</md-option>
+                            <md-option value="4">4</md-option>
+                        </md-select>
+                    </md-input-container>
                     <md-divider></md-divider>
-                    <div flex="33" layout="column">
-                        <div layout="row">
-                            <md-input-container>
-                                <label>Rooms</label>
-                                <md-select name="chosenRoom" ng-model="chosenRoom">
-                                    <md-option ng-repeat="room in rooms" ng-if="!takenRoom(room)" ng-value="room">{{ room.name }}</md-option>
-                                </md-select>
-                            </md-input-container>
-                            <md-button ng-click="appendRoom()">Add</md-button>
+                    <div layout="row">
+                        <div flex="33" layout="column">
+                            <div layout="row">
+                                <md-input-container>
+                                    <label>Groups</label>
+                                    <md-select ng-model="chosenGroup">
+                                        <md-option ng-repeat="group in groups" ng-if="!( newRule.groups | contains:group)" ng-value="group">{{ group.name }}</md-option>
+                                    </md-select>
+                                </md-input-container>
+                                <md-button ng-click="newRule.groups.push(chosenGroup)" ng-show="chosenGroup">Add</md-button>
+                            </div>
+                            <md-divider></md-divider>
+                            <div ng-repeat="group in newRule.groups" layout="row">
+                                <div flex="60">{{ group.name }}</div>
+                                <div flex><md-button ng-click="removeGroupFromList(group)">Remove</md-button></div>
+                            </div>
                         </div>
                         <md-divider></md-divider>
-                        <div ng-repeat="room in newRule.rooms" layout="row">
-                            <div flex="60">{{ room.name }}</div>
-                            <div flex><md-button ng-click="removeRoomFromList(room)">Remove</md-button></div>
+                        <div flex="33" layout="column">
+                            <div layout="row">
+                                <md-input-container>
+                                    <label>Profs</label>
+                                    <md-select ng-model="chosenProf">
+                                        <md-option ng-repeat="prof in profs" ng-if="!(newRule.profs | contains:prof)" ng-value="prof">{{ prof.surname + ' ' + prof.name + ' ' + prof.lastname }}</md-option>
+                                    </md-select>
+                                </md-input-container>
+                                <md-button ng-click="newRule.profs.push(chosenProf)" ng-show="chosenProf">Add</md-button>
+                            </div>
+                            <md-divider></md-divider>
+                            <div ng-repeat="prof in newRule.profs" layout="row">
+                                <div flex="60">{{ prof.surname + ' ' + prof.name + ' ' + prof.lastname }}</div>
+                                <div flex><md-button ng-click="removeProfFromList(prof)">Remove</md-button></div>
+                            </div>
+                        </div>
+                        <md-divider></md-divider>
+                        <div flex="33" layout="column">
+                            <div layout="row">
+                                <md-input-container>
+                                    <label>Rooms</label>
+                                    <md-select name="chosenRoom" ng-model="chosenRoom">
+                                        <md-option ng-repeat="room in rooms" ng-if="!(newRule.rooms | contains:room)" ng-value="room">{{ room.name }}</md-option>
+                                    </md-select>
+                                </md-input-container>
+                                <md-button ng-click="newRule.rooms.push(chosenRoom)">Add</md-button>
+                            </div>
+                            <md-divider></md-divider>
+                            <div ng-repeat="room in newRule.rooms" layout="row">
+                                <div flex="60">{{ room.name }}</div>
+                                <div flex><md-button ng-click="removeRoomFromList(room)">Remove</md-button></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <md-button ng-show="addRuleForm.$valid" ng-click="addRule()">Confirm</md-button>
-            </form>
-            <md-divider></md-divider>
-            <div ng-show="!ruleForm">
-                <p>Rules filter.</p>
-                <md-input-container>
-                    <label>Subject</label>
-                    <md-select ng-model="scheduleFilter.subject">
-                        <md-option ng-repeat="subject in subjects" ng-value="subject">{{ subject.name }}</md-option>
-                    </md-select>
-                </md-input-container>
-                <md-button ng-click="getRules()" ng-show="scheduleFilter.subject">Display</md-button>
+                    <md-button ng-show="addRuleForm.$valid" ng-click="addRule()">Confirm</md-button>
+                </form>
                 <md-divider></md-divider>
-                <div layout="column">
-                    <div ng-repeat="rule in rulesSelection" layout="row">
-                        <div flex="25">{{ rule.ID }}</div>
-                        <div flex="20" layout="column">
-                            <div ng-repeat="roomID in rule.rooms">{{ findRoomById(roomID) }}</div>
-                        </div>
-                        <div flex="20" layout="column">
-                            <div ng-repeat="groupID in rule.groups">{{ findGroupById(groupID) }}</div>
-                        </div>
-                        <div flex="20" layout="column">
-                            <div ng-repeat="profID in rule.profs">{{ findProfById(profID) }}</div>
-                        </div>
-                        <div flex>
-                            <md-button ng-click="modifyRule(rule)">Change</md-button>
-                            <md-button ng-click="deleteRule(rule)">Delete</md-button>
+                <div ng-show="!ruleForm">
+                    <p>Rules filter.</p>
+                    <md-input-container>
+                        <label>Subject</label>
+                        <md-select ng-model="scheduleFilter.subject">
+                            <md-option ng-repeat="subject in subjects" ng-value="subject">{{ subject.name }}</md-option>
+                        </md-select>
+                    </md-input-container>
+                    <md-button ng-click="getRules()" ng-show="scheduleFilter.subject">Display</md-button>
+                    <md-divider></md-divider>
+                    <div layout="column">
+                        <div ng-repeat="rule in rulesSelection" layout="row">
+                            <div flex="25">{{ rule.ID }}</div>
+                            <div flex="20" layout="column">
+                                <div ng-repeat="roomID in rule.rooms">{{ findRoomById(roomID) }}</div>
+                            </div>
+                            <div flex="20" layout="column">
+                                <div ng-repeat="groupID in rule.groups">{{ findGroupById(groupID) }}</div>
+                            </div>
+                            <div flex="20" layout="column">
+                                <div ng-repeat="profID in rule.profs">{{ findProfById(profID) }}</div>
+                            </div>
+                            <div flex>
+                                <md-button ng-click="modifyRule(rule)">Change</md-button>
+                                <md-button ng-click="deleteRule(rule)">Delete</md-button>
+                            </div>
                         </div>
                     </div>
                 </div>
