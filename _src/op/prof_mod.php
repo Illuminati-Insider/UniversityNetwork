@@ -1,3 +1,4 @@
+<?php
 switch ($data['type']){
 			case 'add':
 				$name = check_str($data['name']);
@@ -76,3 +77,4 @@ switch ($data['type']){
 				break;
 			 
 		}
+?>
