@@ -9,7 +9,7 @@ Desktop.ini
 $RECYCLE.BIN/
 
 # SVG images
-.svg
+*.svg
 
 # Windows Installer files
 *.cab
