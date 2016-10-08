@@ -1,6 +1,4 @@
-﻿<?php
-
-	switch ($data['type']){
+switch ($data['type']){
 			case 'add':
 				$name = check_str($data['name']);
 				$surname = check_str($data['surname']);
@@ -16,14 +14,20 @@
 					else 	{
 						throw403();
 					};
-				break;
-				
+				break;	
 			case 'list':
+			if (count($data) == 1) {
+						$query = "-- Список сотрудников кафедры
+							SELECT `ID`, `Surname`, `Name`, `Lastname`
+							FROM `Profs`;";
+			}
+			else {
 			$depID = $data['depID'];
-				$query = "-- Список сотрудников кафедры
-						SELECT `ID`, `Surname`, `Name`, `Lastname`
-						FROM `Profs`
-						WHERE `Departments_ID` = '$depID';";
+			$query = "-- Список сотрудников кафедры
+				SELECT `ID`, `Surname`, `Name`, `Lastname`
+				FROM `Profs`
+				WHERE `Departments_ID` = '$depID';";
+			};
 				if ($result = $mysql->query($query)) {	
 					$output = array();
 					 while ($row = $result->fetch_row())  
@@ -42,8 +46,7 @@
 					else {
 						throw403();
 					} 	
-				break;
-				
+				break;	
 			case 'modify':
 				$new_name=check_str($data['name']);
 				$new_surname = check_str($data['surname']);
@@ -63,10 +66,8 @@
 									$output = array('id' => $profID, 'name' => $new_name, 'lastname' => $new_lastname, 'surname' => $new_surname);
 								};
 						
-				break;
-				
-				
-			case 'delete':
+				break;	
+				case 'delete':
 				$profID = $data['profID'];			
 				$query = "DELETE FROM `Profs` WHERE `ID` = $profID;
 				INSERT INTO `dellog` (`Text`, `ID`) VALUES ('prof', $profID);";
@@ -75,4 +76,3 @@
 				break;
 			 
 		}
-		?>
