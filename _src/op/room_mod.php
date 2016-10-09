@@ -2,7 +2,7 @@
 	
 	switch ($data['type']){
 			case 'add':
-				$name = check_str($data['name']);		
+				$name = check_str($data['location']);		
 					if(!($mysql->query("INSERT INTO `rooms` (`name`,`Modified`) VALUES ('$name',CURRENT_TIMESTAMP);"))) {
 						throw403();
 					} 
@@ -37,8 +37,8 @@
 			
 				break;
 			case 'modify':
-				$new_name=check_str($data['name']);
-				$ID = $data['roomID'];
+				$new_name=check_str($data['location']);
+				$ID = checkInt($data['roomID']);
 				$query = "-- Изменение данных аудитории
 						UPDATE `Rooms` 
 						SET `name` = '$new_name',`Modified` = CURRENT_TIMESTAMP 
