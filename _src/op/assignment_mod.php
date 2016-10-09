@@ -1,9 +1,9 @@
 ﻿<?php 
 	switch ($data['type']){
 			case 'add':
-				$programID = $data['programID'];
-				$json = $data['json'];
-				$groupID = $data['groupID'];
+				$programID = checkInt($data['programID']);
+				$json = checkStr($data['json']);
+				$groupID = checkInt($data['groupID']);
 				$query = "INSERT INTO `assignments` (`Program_ID`, `Data`,`Modified`)
 							VALUES ($programID, '$json',CURRENT_TIMESTAMP);
     
@@ -21,7 +21,7 @@
 				break;
 				
 			case 'list':
-				$programID = $data['programID'];
+				$programID = checkInt($data['programID']);
 				$query = "-- Список работ по предмету
 						SELECT `ID`, `Data`
 						FROM `assignments`
@@ -43,8 +43,8 @@
 				break;
 				
 			case 'toggle':
-				$userID = $data['userID'];
-				$asgID = $data['asgID'];
+				$userID = checkInt($data['userID']);
+				$asgID = checkInt($data['asgID']);
 				$query = "--Изменить статус работы
 							UPDATE `assignmentstatus`
 							SET `Completed` = NOT `Completed`, `Modified` = CURRENT_TIMESTAMP
@@ -59,8 +59,8 @@
 				
 				
 			case 'modify':
-				$json=$data['json'];
-				$asgID = $data['asgID'];
+				$json=checkStr($data['json']);
+				$asgID = checkInt($data['asgID']);
 				$query = "-- Редактирование
 						UPDATE `assignments`
 						SET `Data` = '$json',`Modified` = CURRENT_TIMESTAMP
@@ -73,7 +73,7 @@
 								};	
 				break;
 			case 'delete':
-				$asgID = $data['asgID'];
+				$asgID = checkInt($data['asgID']);
 				$query = "DELETE FROM `Assignments` WHERE `ID` = $asgID;
 				INSERT INTO `dellog` (`Text`, `ID`) VALUES ('assignment', $asgID);";
 					runmultiquery($query);
