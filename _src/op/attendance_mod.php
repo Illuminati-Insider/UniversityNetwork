@@ -46,7 +46,7 @@
 				break;							
 				
 			case 'delete':
-				$noteID = $data['noteID'];
+				$noteID = checkInt($data['noteID']);
 				$query = "DELETE FROM `StudentAttendanceRecords` WHERE `ID` = $noteID;
 				INSERT INTO `dellog` (`Text`, `ID`) VALUES ('attendance', $noteID);";
 					RunMultiQuery($query);
