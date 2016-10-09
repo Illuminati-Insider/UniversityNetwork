@@ -3,7 +3,7 @@ switch ($data['type']){
 				$name = check_str($data['name']);
 				$surname = check_str($data['surname']);
 				$lastname = check_str($data['lastname']);
-				$depID = $data['depID'];
+				$depID = checkInt($data['depID']);
 				$query = "-- Добавление преподавателя
 						INSERT INTO `Profs` (`Surname`, `Name`, `Lastname`, `Departments_ID`,`Modified`)
 						VALUES ('$surname', '$name', '$lastname', '$depID',CURRENT_TIMESTAMP)";
@@ -16,18 +16,7 @@ switch ($data['type']){
 					};
 				break;	
 			case 'list':
-			if (count($data) == 1) {
-						$query = "-- Список сотрудников кафедры
-							SELECT `ID`, `Surname`, `Name`, `Lastname`
-							FROM `Profs`;";
-			}
-			else {
-			$depID = $data['depID'];
-			$query = "-- Список сотрудников кафедры
-				SELECT `ID`, `Surname`, `Name`, `Lastname`
-				FROM `Profs`
-				WHERE `Departments_ID` = '$depID';";
-			};
+			$query = (isset($data['depID'])) ? $query = " SELECT `ID`, `Surname`, `Name`, `Lastname` FROM `Profs` WHERE `Departments_ID` = {$data['depID']}" : $query = "SELECT `ID`, `Surname`, `Name`, `Lastname` FROM `Profs`";
 				if ($result = $mysql->query($query)) {	
 					$output = array();
 					 while ($row = $result->fetch_row())  
@@ -51,7 +40,7 @@ switch ($data['type']){
 				$new_name=check_str($data['name']);
 				$new_surname = check_str($data['surname']);
 				$new_lastname = check_str($data['lastname']);
-				$profID = $data['profID'];
+				$profID = checkInt($data['profID']);
 				$query = "-- Изменение данных преподавателя
 						UPDATE `profs` 
 						SET `name` = '$new_name', `surname` = '$new_surname', `lastname` = '$new_lastname',`Modified` = CURRENT_TIMESTAMP 
@@ -68,7 +57,7 @@ switch ($data['type']){
 						
 				break;	
 				case 'delete':
-				$profID = $data['profID'];			
+				$profID = checkInt($data['profID']);			
 				$query = "DELETE FROM `Profs` WHERE `ID` = $profID;
 				INSERT INTO `dellog` (`Text`, `ID`) VALUES ('prof', $profID);";
 				(runmultiquery($query));	
