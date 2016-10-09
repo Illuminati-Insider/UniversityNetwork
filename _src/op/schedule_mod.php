@@ -32,7 +32,7 @@ switch($data['type']){
             foreach($rules_id as $ruleID){
                 $container = array();
                 $query = "
-                    SELECT DISTINCT `ID` as `id`, `weekDay` as `weekDay`, `weekType` as `weekType`, `classType` as `classType`, `SubgroupIndex` as `subIndex`, `Subjects_ID` as `subjectID`, `order` as `order`
+                    SELECT DISTINCT `ID` as `id`, `weekDay` as `weekDay`, `weekType` as `weekType`, `classType` as `classType`, `SubgroupIndex` as `subgroup`, `Subjects_ID` as `subjectID`, `order` as `order`
                     FROM `rulesList`
                     WHERE `id` = $ruleID";
                 if ($result = $mysql->query($query)){
@@ -68,7 +68,7 @@ switch($data['type']){
                 while($row = $result->fetch_row()){
                     $output['rules'][] = array(
                         'classType' => $row[0],
-                        'subIndex' => $row[1],
+                        'subgroup' => $row[1],
                         'subjectID' => $row[2]
                     );
                 }
@@ -129,7 +129,7 @@ switch($data['type']){
         $weekDay = checkInt($data['weekDay']);
         $weekType = checkInt($data['weekType']);
         $classType = checkString($data['classType']);
-        $subgroup = $data['subgroup'];
+        $subgroup = $data['subgroup'] ?? 'NULL';
         $order = checkInt($data['order']);
         $subjectID = checkInt($data['subjectID']);
         
@@ -141,7 +141,7 @@ switch($data['type']){
                 SET `weekDay` = $weekDay, 
                 `weektype`= $weekType, 
                 `classtype` = '$classType', 
-                `subgroupIndex` = ".($subgroup ?? 'NULL').", 
+                `subgroupIndex` = $subgroup, 
                 `order` = $order,
                 `subjects_id` = $subjectID
                 WHERE `id` = @RuleID;";

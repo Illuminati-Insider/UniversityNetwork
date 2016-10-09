@@ -533,8 +533,8 @@ app.controller('managerController', ['$scope','api', 'flib', function($scope,api
         $scope.newRule = rule;
         $scope.newRule.subject = flib.findByField($scope.subjects, 'id', rule.subjectID);
         $scope.newRule.prototype = rule;
-        $scope.generateDates();
-        
+        $scope.newRule.classes = $scope.generateDates();
+                
         api.get('prof_mod', 'list',{}).then(function(response){
             console.debug(response);
             $scope.profs = response.data;
@@ -597,7 +597,7 @@ app.controller('managerController', ['$scope','api', 'flib', function($scope,api
             weekDay: $scope.newRule.weekDay,
             weekType: $scope.newRule.weekType,
             classType: $scope.newRule.classType,
-            subgroup: $scope.newRule.subgroup,
+            subgroup: $scope.newRule.subgroup != '' ? $scope.newRule.subgroup : null,
             order: $scope.newRule.order
         }).then(function(response){
             console.debug(response);
@@ -619,6 +619,19 @@ app.controller('managerController', ['$scope','api', 'flib', function($scope,api
         });
     };
     
+    $scope.appendGroupToRule = function(){
+        $scope.newRule.groups.push($scope.chosenGroup);
+        $scope.chosenGroup = null;
+    };
+    $scope.appendProfToRule = function(){
+        $scope.newRule.profs.push($scope.chosenProf);
+        $scope.chosenProf = null;
+    };
+    $scope.appendRoomToRule = function(){
+        $scope.newRule.rooms.push($scope.chosenRoom);
+        $scope.chosenRoom = null;
+    };
+    
     $scope.removeGroupFromList = function(group){
         $scope.newRule.groups = flib.eject($scope.newRule.groups, group);
     };
@@ -637,11 +650,11 @@ app.controller('managerController', ['$scope','api', 'flib', function($scope,api
         if (!$scope.scheduleFilter.semester || !$scope.newRule || !$scope.newRule.order || !$scope.newRule.weekDay || !$scope.newRule.weekType) return null;
         var init_date = new Date($scope.scheduleFilter.semester.startTimestamp.valueOf());
         switch($scope.newRule.order){
-            case 1: init_date.setHours(8); init_date.setMinutes(30); break;
-            case 2: init_date.setHours(10); init_date.setMinutes(15); break;
-            case 3: init_date.setHours(12); init_date.setMinutes(00); break;
-            case 4: init_date.setHours(14); init_date.setMinutes(00); break;
-            case 5: init_date.setHours(15); init_date.setMinutes(45); break;
+            case 1: case '1': init_date.setHours(8); init_date.setMinutes(30); break;
+            case 2: case '2': init_date.setHours(10); init_date.setMinutes(15); break;
+            case 3: case '3': init_date.setHours(12); init_date.setMinutes(00); break;
+            case 4: case '4': init_date.setHours(14); init_date.setMinutes(00); break;
+            case 5: case '5': init_date.setHours(15); init_date.setMinutes(45); break;
         }
         var week = 1;
         if (init_date.getDay() > $scope.newRule.weekDay) {

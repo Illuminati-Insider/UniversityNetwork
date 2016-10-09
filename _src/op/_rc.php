@@ -44,7 +44,7 @@ function generateHash(){
     }
     return $result;
 }
-
+/*
 function generateToken(){
     $length = 64;
     $result = '';
@@ -55,7 +55,7 @@ function generateToken(){
     }
     return $result;
 }
-
+*/
 function runMultiQuery($query){
     global $mysql;
     if (!$mysql->query("START TRANSACTION")) throw403('Cant start transaction.');
@@ -84,6 +84,7 @@ function composeNote($table, $type){
 #########################################################################
 # Execution start.
 $start_exec_time = microtime(true);
+$start_memory_usage = memory_get_usage();
 session_start();
 
 # Configuraion of MySQL. Connects to database and creates $mysql variable.
@@ -102,8 +103,6 @@ $queryLog = 'query_log.txt';
 if (!isset($_GET['rtype'])){
     throw403('Invalid method.');
 }
-$sessionID = $_SESSION['id'];
-$token = $_SESSION['token'];
 
 $update = $_GET['update'];
 if ($_SESSION['lastTimestamp']){
@@ -191,36 +190,13 @@ $requestMasks = array(
     'upload_req_complete' => 6
 );
 
-if (!isset($_SESSION['accountType'])) $anonymous = true; else $anonymous = false;
-
 # Composing type.
 $type = $_GET['rtype'].'_'.$_GET['type'];
 $data = array_merge($_GET, $_POST);
 
-if (!$anonymous){
-    $accountType = $_SESSION['accountType'];
-    $userID = $_SESSION['userID'];
-    switch($accountType){
-        case 'admin':
-            $accountMask = 16;
-            break;
-        case 'manager':
-            $accountMask = 8;
-            break;
-        case 'student':
-            // Fetching group.
-            $groupID = $mysql->query("SELECT `Groups_ID` FROM `Students` WHERE `Accounts_ID` = $userID")->fetch_row()[0];
-            $accountMask = 2;
-            if ($mysql->query("SELECT `PresidentID` FROM `Groups` WHERE `ID` = $groupID")->fetch_row()[0]) {
-                $accountType = 'president';  
-                $accountMask = 4;
-            } 
-            break;
-    }
-} else {
-    # Anonymous account. Sign-in and registration only.
-    $accountMask = 1;
-}
+$accountMask = $_SESSION['accountMask'] ?? 1;
+$groupID = $_SESSION['groupID'];
+$accountType = $_SESSION['accountType'];
 
 if (($requestMasks[$type] & $accountMask) == 0) {
     trigger_error('invalid mask');
@@ -290,10 +266,17 @@ if ($update){
     }
 } else require $_GET['rtype'].".php";
 
-$_SESSION['lastTimestamp'] = time();
-$mysql->query("UPDATE `Sessions` SET `LastRequestTimestamp` = CURRENT_TIMESTAMP WHERE `Token` LIKE '$token' AND ID = $sessionID");
-
 # Requests populate variable $output as assossiative/index array of data.
+
+# Request is completed.
+
+$_SESSION['lastTimestamp'] = time();
+$end_exec_time = microtime(true);
+$end_memory_usage = memory_get_usage();
+$peak_memory = memory_get_peak_usage();
+
+file_put_contents('S:/php7/usage_info.txt', "{$_GET['rtype']} {$_GET['type']} $start_exec_time $end_exec_time $start_memory_usage $end_memory_usage $peak_memory
+", FILE_APPEND | LOCK_EX);
 
 die(json_encode($output));
 ?>

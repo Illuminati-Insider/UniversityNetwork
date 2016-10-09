@@ -5,52 +5,41 @@ switch($data['type']){
         $login = $data['login'];
         $psw = $data['psw'];
 
-        $query = "
-            -- Получение хэша и ID пользователя из БД (с последующей валидацией в PHP)
-            SELECT `ID`, `PswHash`
-            FROM `Accounts`
-            WHERE `Login` LIKE '$login';
-
-            -- Создание/обновление сессии
-            INSERT INTO `Sessions` (`Token`, `Accounts_ID`)
-            VALUES ('$token', $accountID) 
-            ON DUPLICATE KEY UPDATE `LastRequestTimestamp` = CURRENT_TIMESTAMP;";
-
-        if ($result = $mysql->query("
-            -- Получение хэша и ID пользователя из БД (с последующей валидацией в PHP)
-            SELECT `ID`, `PswHash`
-            FROM `Accounts`
-            WHERE `Login` LIKE '$login'")){
-            if ($row = $result->fetch_row()){
-                $accountID = $row[0];
-                $hash = $row[1];
-                $result->free();
-            } else throw403();
+        $result = $mysql->query("SELECT `ID`, `PswHash` FROM `Accounts` WHERE `Login` LIKE '$login'");
+        if (!$result) throw403();
+        
+        if ($row = $result->fetch_row()){
+            $accountID = $row[0];
+            $hash = $row[1];
+            $result->free();
         } else throw403();
 
         if (!password_verify($psw, $hash)) throw403();
 
-        # generating token for new session.
-        $token = generateToken();
+        $accountType = $mysql->query("SELECT `accountType` FROM `Accounts` WHERE `ID`=$accountID")->fetch_row()[0];
 
-        if ($result = $mysql->query("
-            -- Создание/обновление сессии
-            INSERT INTO `Sessions` (`Token`, `Accounts_ID`)
-            VALUES ('$token', $accountID) 
-            ON DUPLICATE KEY 
-                UPDATE `LastRequestTimestamp` = CURRENT_TIMESTAMP, 
-                    `Token` = '$token', 
-                    `ID` = LAST_INSERT_ID(`ID`)")){
-            $sessionID = $mysql->insert_id;
-            
-        } else throw403();
-
-        $accountType = $mysql->query("SELECT `accountType` FROM `Accounts` WHERE `ID` = (SELECT `Accounts_ID` FROM `Sessions` WHERE `ID` = $sessionID)")->fetch_row()[0];
+        switch($accountType){
+            case 'admin':
+                $accountMask = 16;
+                break;
+            case 'manager':
+                $accountMask = 8;
+                break;
+            case 'student':
+                // Fetching group.
+                $groupID = $mysql->query("SELECT `Groups_ID` FROM `Students` WHERE `Accounts_ID` = $userID")->fetch_row()[0];
+                $accountMask = 2;
+                if ($mysql->query("SELECT `PresidentID` FROM `Groups` WHERE `ID` = $groupID")->fetch_row()[0]) {
+                    $accountType = 'president';  
+                    $accountMask = 4;
+                } 
+                break;
+        }
         
-        $_SESSION['id'] = $sessionID;
-        $_SESSION['token'] = $token;
         $_SESSION['userID'] = $accountID;
         $_SESSION['accountType'] = $accountType;
+        $_SESSION['accountMask'] = $accountMask;
+        $_SESSION['groupID'] = $groupID;
         
         $output = array(
             'accountType' => $accountType

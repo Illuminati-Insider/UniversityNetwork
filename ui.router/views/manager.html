@@ -393,7 +393,7 @@
                                         <md-option ng-repeat="group in groups" ng-if="!( newRule.groups | contains:group)" ng-value="group">{{ group.name }}</md-option>
                                     </md-select>
                                 </md-input-container>
-                                <md-button ng-click="newRule.groups.push(chosenGroup)" ng-show="chosenGroup">Add</md-button>
+                                <md-button ng-click="appendGroupToRule()" ng-show="chosenGroup">Add</md-button>
                             </div>
                             <md-divider></md-divider>
                             <div ng-repeat="group in newRule.groups" layout="row">
@@ -410,7 +410,7 @@
                                         <md-option ng-repeat="prof in profs" ng-if="!(newRule.profs | contains:prof)" ng-value="prof">{{ prof.surname + ' ' + prof.name + ' ' + prof.lastname }}</md-option>
                                     </md-select>
                                 </md-input-container>
-                                <md-button ng-click="newRule.profs.push(chosenProf)" ng-show="chosenProf">Add</md-button>
+                                <md-button ng-click="appendProfToRule()" ng-show="chosenProf">Add</md-button>
                             </div>
                             <md-divider></md-divider>
                             <div ng-repeat="prof in newRule.profs" layout="row">
@@ -427,7 +427,7 @@
                                         <md-option ng-repeat="room in rooms" ng-if="!(newRule.rooms | contains:room)" ng-value="room">{{ room.name }}</md-option>
                                     </md-select>
                                 </md-input-container>
-                                <md-button ng-click="newRule.rooms.push(chosenRoom)">Add</md-button>
+                                <md-button ng-click="appendRoomToRule()" ng-show="chosenRoom">Add</md-button>
                             </div>
                             <md-divider></md-divider>
                             <div ng-repeat="room in newRule.rooms" layout="row">
