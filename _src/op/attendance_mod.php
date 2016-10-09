@@ -2,9 +2,9 @@
 	
 	switch ($data['type']){
 			case 'add':
-				$Students_ID = $data['Students_ID'];
-				$Classes_ID = $data['Classes_ID'];
-				$status = $data['status'];
+				$Students_ID = checkInt($data['Students_ID']);
+				$Classes_ID = checkInt($data['Classes_ID']);
+				$status = checkStr($data['status']);
 				if ($status == 101) {
 				$query = "-- Добавление пропуска
 							INSERT INTO `studentattendancerecords` (`Students_ID`, `Classes_ID`,`Status`,`Modified`)
@@ -25,7 +25,7 @@
 							};
 				break;	
 			case 'list':
-				$studentID = $data['Students_ID' ];
+				$studentID = checkInt($data['Students_ID']);
 				$query = "SELECT `Classes_ID`, `Status`
 						FROM `StudentAttendanceRecords`
 						WHERE `Students_ID` = $studentID;";
@@ -47,7 +47,7 @@
 				break;							
 				
 			case 'delete':
-				$noteID = $data['ID'];
+				$noteID = checkInt($data['noteID']);
 				$query = "DELETE FROM `StudentAttendanceRecords` WHERE `ID` = $noteID;
 				INSERT INTO `dellog` (`Text`, `ID`) VALUES ('attendance', $noteID);";
 					RunMultiQuery($query);
@@ -56,7 +56,6 @@
 				
 				
 			case 'grouplist':
-				$groupID = $data['Groups_ID'];
 				$query = "-- Получение списка пропусков
 							SELECT `ID`, `Students_ID`, `Classes_ID`, `Status`
 							FROM `StudentAttendanceRecords`
