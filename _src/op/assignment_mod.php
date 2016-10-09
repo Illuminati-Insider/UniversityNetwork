@@ -2,7 +2,7 @@
 	switch ($data['type']){
 			case 'add':
 				$programID = checkInt($data['programID']);
-				$json = checkStr($data['json']);
+				$json = checkString($data['json']);
 				$groupID = checkInt($data['groupID']);
 				$query = "INSERT INTO `assignments` (`Program_ID`, `Data`,`Modified`)
 							VALUES ($programID, '$json',CURRENT_TIMESTAMP);
@@ -59,7 +59,7 @@
 				
 				
 			case 'modify':
-				$json=checkStr($data['json']);
+				$json=checkString($data['json']);
 				$asgID = checkInt($data['asgID']);
 				$query = "-- Редактирование
 						UPDATE `assignments`
