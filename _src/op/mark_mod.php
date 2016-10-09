@@ -2,9 +2,9 @@
 	switch ($data['type']){
 			case 'add':
 				$mark = check_str($data['mark']);
-				$studentID = $data['studentID'];
-				$programID = $data['programID'];
-				$profID =  $data['profID'];
+				$studentID = checkInt($data['studentID']);
+				$programID = checkInt(data['programID']);
+				$profID =  checkInt($data['profID']);
 				$query = "-- Добавление оценки
 							INSERT INTO `StudentResults` (`Students_ID`, `Programs_ID`, `Profs_ID`, `Mark`,`Modified`)
 							VALUES ($studentID, $programID, $profID, '$mark',CURRENT_TIMESTAMP);";
@@ -18,7 +18,7 @@
 				break;
 				
 			case 'list':
-				$studentID = $data['studentID'];
+				$studentID = checkInt($data['studentID']);
 				$query = "SELECT `ID`, `Programs_ID`, `Profs_ID`, `Mark` 
 						FROM `StudentResults` 
 						WHERE `Students_ID` = $studentID;";
@@ -45,7 +45,7 @@
 			
 				break;						
 			case 'delete':
-				$noteID = $data['noteID'];
+				$noteID = checkInt($data['noteID']);
 				$query = "DELETE FROM `StudentResults` WHERE `ID` = $noteID;
 				INSERT INTO `dellog` (`Text`, `ID`) VALUES ('mark', $noteID);";
 					runmultiquery($query);
