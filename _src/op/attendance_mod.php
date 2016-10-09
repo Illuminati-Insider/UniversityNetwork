@@ -4,7 +4,7 @@
 			case 'add':
 				$Students_ID = checkInt($data['studentID']);
 				$Classes_ID = checkInt($data['classID']);
-				$status = checkStr($data['status']);
+				$status = checkString($data['status']);
 				if ($status == 101) {
 				$query = "-- Добавление пропуска
 							INSERT INTO `studentattendancerecords` (`Students_ID`, `Classes_ID`,`Status`,`Modified`)
