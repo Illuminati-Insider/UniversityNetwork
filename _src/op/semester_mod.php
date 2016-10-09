@@ -2,10 +2,10 @@
 
 	switch ($data['type']){
 			case 'add':
-				$year = $data['year'];
-				$season = $data['season'];
-				$startTime= $data['startTime'];
-				$endTime = $data['endTime'];
+				$year = checkInt($data['year']);
+				$season = checkString($data['season']);
+				$startTime= checkString($data['startTime']);
+				$endTime = checkString($data['endTime']);
 				$query = "-- Добавление семестра
 							INSERT INTO `Semester` (`Year`, `Season`, `StartTimestamp`, `EndTimestamp`,`Modified`)
 							VALUES ($year, '$season', '$startTime', '$endTime',CURRENT_TIMESTAMP);";				
@@ -40,7 +40,7 @@
 				break;
 											
 			case 'delete':
-				$semesterid = $data['semesterID'];
+				$semesterid = checkInt($data['semesterID']);
 				$query = "DELETE FROM `Semester` WHERE `id` = $semesterid;
 				INSERT INTO `dellog` (`Text`, `id`) VALUES ('semester', $semesterid);";
 				RunMultiQuery($query);					
