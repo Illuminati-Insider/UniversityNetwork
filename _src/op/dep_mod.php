@@ -37,7 +37,7 @@
 				break;
 			case 'modify':
 				$new_name=check_str($data['name']);
-				$ID = $data['depID'];
+				$ID = checkInt($data['depID']);
 				$query = "-- Изменение данных аудитории
 						UPDATE `Departments` 
 						SET `name` = '$new_name' , `Modified` = CURRENT_TIMESTAMP 
@@ -53,7 +53,7 @@
 				
 				
 			case 'delete':
-				$ID = $data['depID'];
+				$ID = checkInt($data['depID']);
 				$query = "DELETE FROM `departments` WHERE `departments`.`ID` = $ID;
 				INSERT INTO `dellog` (`Text`, `ID`) VALUES ('dep', $ID);";
 					runMultiQuery($query); 					
